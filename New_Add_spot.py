@@ -71,40 +71,48 @@ def red_contour_detect(image):
     #cv2.imshow('Mask', mask)
     return (contours)
 
-# Load an image
-img = cv2.imread('test2.jpg')
+def main(WindowName, image):
+    img = image
+    # Create a window, and bind the function to the window
+    cv2.namedWindow(WindowName, cv2.WINDOW_NORMAL)
+    cv2.setMouseCallback(WindowName, draw_rectangle)
 
-# Create a window, and bind the function to the window
-cv2.namedWindow('Select Area and Draw', cv2.WINDOW_NORMAL)
-cv2.setMouseCallback('Select Area and Draw', draw_rectangle)
+    while True:
+        cv2.imshow(WindowName, img)
+        k = cv2.waitKey(1) & 0xFF
 
-while True:
-    cv2.imshow('Select Area and Draw', img)
-    k = cv2.waitKey(1) & 0xFF
-
-    if k == 27:  # Press 'Esc' to exit
-        break
-    elif k == 114:  # Press 'r' to switch to drawing mode
-        cv2.imshow('Enlarged ROI', np.zeros((512, 512, 3), np.uint8))  # Clear the enlarged ROI window
-        cv2.setMouseCallback('Enlarged ROI', draw_red)  # Switch to drawing on the enlarged image
-        while True:
-            cv2.imshow('Enlarged ROI', roi_enlarged)
-            k2 = cv2.waitKey(1) & 0xFF
-            if k2 == 27:  # Press 'Esc' to exit drawing mode
-                # Extract the red channel
-                contour_image = red_contour_detect(roi_enlarged)
+        if k == 27:  # Press 'Esc' to exit
+            break
+        elif k == 114:  # Press 'r' to switch to drawing mode
+            cv2.imshow('Enlarged ROI', np.zeros((512, 512, 3), np.uint8))  # Clear the enlarged ROI window
+            cv2.setMouseCallback('Enlarged ROI', draw_red)  # Switch to drawing on the enlarged image
+            while True:
+                cv2.imshow('Enlarged ROI', roi_enlarged)
+                k2 = cv2.waitKey(1) & 0xFF
+                if k2 == 27:  # Press 'Esc' to exit drawing mode
+                    # Extract the red channel
+                    contour_image = red_contour_detect(roi_enlarged)
                 
-                cv2.drawContours(roi_enlarged, contour_image, -1, (0, 255, 0), 2)
-                cv2.imshow('Outline of Red Image', roi_enlarged)
-                break
+                    cv2.drawContours(roi_enlarged, contour_image, -1, (0, 255, 0), 2)
+                    cv2.imshow('Outline of Red Image', roi_enlarged)
+                    break
 
-        # Switch back to selecting area and drawing rectangles
-        cv2.setMouseCallback('Select Area and Draw', draw_rectangle)
+            # Switch back to selecting area and drawing rectangles
+            cv2.setMouseCallback(WindowName, draw_rectangle)
         
-        for result_contour in contour_image:
-            result_contour[:, :, 0] = result_contour[:, :, 0] * 0.2
-            result_contour[:, :, 1] = result_contour[:, :,  1] * 0.2
-        cv2.drawContours(img, result_contour, -1, (255, 0, 0), 3, offset=(init_x, init_y))
+            for result_contour in contour_image:
+                result_contour[:, :, 0] = result_contour[:, :, 0] * 0.2
+                result_contour[:, :, 1] = result_contour[:, :,  1] * 0.2
+            cv2.drawContours(img, result_contour, -1, (0, 0, 255), 3, offset=(init_x, init_y))
 
+    return result_contour
+    #cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    img = cv2.imread('test2.jpg')
+    cv2.namedWindow('Image', cv2.WINDOW_NORMAL)
+
+    added_contour = main('Image', img)
 
 cv2.destroyAllWindows()
+
