@@ -22,11 +22,12 @@ def draw_red(event, x, y, flags, param):
 
 # Mouse callback function for selecting area and drawing rectangles
 def draw_rectangle(event, x, y, flags, param):
-    global ix, iy, drawing, roi_enlarged
+    global ix, iy,init_x, init_y, drawing, roi_enlarged
 
     if event == cv2.EVENT_LBUTTONDOWN:
         drawing = True
         ix, iy = x, y
+        init_x, init_y = x, y
 
     elif event == cv2.EVENT_LBUTTONUP:
         drawing = False
@@ -37,7 +38,7 @@ def draw_rectangle(event, x, y, flags, param):
 
 def red_contour_detect(image):
     # Чтение изображения
-    #image = cv2.imread(image)  # Замените 'your_image.jpg' на путь к вашему изображению
+    #image = cv2.imread(image)
 
     # Преобразование изображения из BGR в HSV
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -103,7 +104,7 @@ while True:
         for result_contour in contour_image:
             result_contour[:, :, 0] = result_contour[:, :, 0] * 0.2
             result_contour[:, :, 1] = result_contour[:, :,  1] * 0.2
-        cv2.drawContours(img, result_contour, -1, (0, 0, 255), 2)
+        cv2.drawContours(img, result_contour, -1, (255, 0, 0), 3, offset=(init_x, init_y))
 
 
 cv2.destroyAllWindows()
